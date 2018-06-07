@@ -1,0 +1,97 @@
+
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}
+尚硅谷书城-登录
+{% endblock %}
+
+{#这是信息,登陆#}
+{% block header_con %}
+{% endblock %}
+
+{#这是搜索框#}
+{% block search %}
+{% endblock %}
+
+{% block search2 %}
+{% endblock %}
+
+
+{% block bodys %}
+<div class="login_top clearfix">
+		<a href="{% url 'books:index' %}" class="login_logo"><img src="{% static 'images/logo.png' %}" style="width: 160px; height: 53px;"></a>
+	</div>
+
+	<div class="login_form_bg">
+		<div class="login_form_wrap clearfix">
+			<div class="login_banner fl"></div>
+			<div class="slogan fl">学计算机 · 来尚硅谷</div>
+			<div class="login_form fr">
+				<div class="login_title clearfix">
+					<h1>用户登录</h1>
+					<a href="#">立即注册</a>
+				</div>
+				<div class="form_input">
+                    {% csrf_token %}
+                    <input type="text" id="username" class="name_input" placeholder="请输入用户名" value="{{ username }}">
+                    <div class="user_error">输入错误</div>
+                    <input type="password" id="pwd" class="pass_input" placeholder="请输入密码">
+                    <div class="pwd_error">输入错误</div>
+                    <div style="top: 100px; position: absolute;">
+                        <input type="text" id="vc" name="vc">
+                        <img src="{% url 'user:verifycode' %}" alt="CheckCode" onclick="this.src='/user/verifycode/?'+Math.random()" id="verifycode">
+                    </div>
+                    <div class="more_input clearfix">
+                        <input type="checkbox" name="remember" {{ checked }}>
+                        <label>记住用户名</label>
+                        <a href="#">忘记密码</a>
+                    </div>
+                    <input type="button" id="btnLogin" value="登录" class="input_submit">
+
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{#底部元素#}
+{% block bottom %}
+{% endblock %}
+
+{#底部样式添加#}
+{% block bottomfiles %}
+        <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+        $(function () {
+
+            $('#btnLogin').click(function () {
+                 var username = $('#username').val();
+                 var password = $('#pwd').val();
+                 var remember = $('input[name="remember"]').prop('checked');
+                 var csrfmiddlewaretoken = $('input[name="csrfmiddlewaretoken"]').val();
+                 var vc = $('input[name="vc"]').val();
+                 var params = {
+                        'username':username,
+                        'password':password,
+                        'remember':remember,
+                        'csrfmiddlewaretoken':csrfmiddlewaretoken,
+                        'verifycode': vc
+                };
+
+                $.post('/user/login_check/',params,function (data) {
+                    if (data.res ==0){
+                        alert("用户名或者密码错误");
+                    } else if (data.res == 1){
+                        location.href = data.next_url;
+                    } else if (data.res == 2){
+                        alert("数据不完整");
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}
+
+{% block cart_count %}
+
+{% endblock %}
